@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasboard</title>
+    <link rel="stylesheet" href="./assets/dashboard.css">
+</head>
+<body>
+    <div class="bg-img">
+        <div class="d-wreaper">
+                <div>
+                    <img src="./assets/image/Circle.png" alt="gambar" class="img">
+                </div>
+                <div class="right">
+            <h1 class="title hr" id="judul">Peduli  Diri</h1>
+            <hr class="borders">
+            <div class="flex">
+                <h3 class="sub-title">Catatan Perjalanan</h3>
+                <h3 class="log" onclick="logout()">Logout</h3>
+            </div>
+            <hr class="borders">
+            <ul class="menu-wrapper">
+                <li class="menu-item" onclick="showTab('home')">Home</li>
+                <li class="menu-item" onclick="showTab('catatan')">Data Catatan Perjalanan</li>
+                <li class="menu-item" onclick="showTab('isiData')">Isi Data</li>
+            </ul>
+            <div class="item-id item jumbotron-wrapper">
+                <div class="jumbotron">
+                    <p class="description">Selamat datang <span 
+                        id="nama_lengkap" 
+                        style="color: #1a1a1a; 
+                        font-weight: bold;">
+                        </span> di aplikasi Peduli Diri
+                    </p>
+                </div>
+                <button class="btn" onclick="showTab('isiData')">Isi Catatan</button>
+            </div>
+            <div class="item-id hidden item table-wrapper">
+                <div class="table-header">
+                    <span class="table-header-text">Urutkan Berdasarkan</span>
+                    <select class="table-header-select" id="selectSorting">
+                        <option selected value="">--Pilihan--</option>
+                        <option value="tanggal">Tanggal</option>
+                        <option value="waktu">Waktu</option>
+                        <option value="lokasi">Lokasi</option>
+                        <option value="suhu">Suhu Tubuh</option>
+                    </select>
+                    <button class="button-u" onclick="urutkanTable()">Urutkan</button>
+                </div>
+                <div class="table-body">
+                    <table id="dataFromApi">
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Lokasi</th>
+                            <th>Suhu Tubuh</th>
+                        </tr>
+                    </table>
+                    <button class="btn-table" onclick="showTab('isiData')">Isi Catatan</button>
+                </div>
+            </div>
+            <div class="item-id hidden item jumbotron-wrapper">
+                <div class="jumbotron center-content">
+                    <div class="dasboard-form-wrapper">
+                        <span>Tanggal</span>
+                        <input class="d-form-input" type="date" id="tanggal">
+                    </div>
+                    <div class="dasboard-form-wrapper">
+                        <span>Jam</span>
+                        <input class="d-form-input" type="time" id="jam">
+                    </div>
+                    <div class="dasboard-form-wrapper">
+                        <span>Lokasi yang dikunjungi</span>
+                        <input class="d-form-input" type="text" id="lokasi">
+                    </div>
+                    <div class="dasboard-form-wrapper">
+                        <span>Suhu tubuh</span>
+                        <input class="d-form-input" type="number" id="suhu">
+                    </div>
+                    <div class="dasboard-form-wrapper button-d-form">
+                        <button class="btn-table" onclick="isiCatatan(event)">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+function cekLogin() {
+            if(localStorage.getItem("isLoggedIn") == null){
+                window.location.replace("login.html");
+            }
+        }
+        cekLogin();
+
+        async function showTab(params) {
+            function menuLooping(el, x) {
+                el.forEach((element, index) => {
+                    if (index === x) {
+                        if(element.classList.contains("hidden")) {
+                            return element.classList.remove("hidden");
+                        }
+                    } else {
+                        return element.classList.add("hidden");
+                    }
+                });
+            }
+
+            const el = document.querySelectorAll(".item-id");
+            if(params === "home") {
+                menuLooping(el, 0);
+            } else if(params === "catatan") {
+                el.forEach((element, index) => {
+                    if(index === 1) {
+                        if(element.classList.contains("hidden")) {
+                            element.classList.remove("hidden");
+                        }
+                    } else {
+                        element.classList.add("hidden");
+                    }
+                });
+
+                const response = await fetch("http://localhost", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        nik: localStorage.getItem("isLoggedIn"),
+                        action: "getCatatan",
+                    }),
+                });
+                let getData = await response.json();
+
+                const dataTable = document.getElementById("dataFromApi");
+
+                let datas = `<tr>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
+                        <th>Lokasi</th>
+                        <th>Suhu</th>
+                    </tr>`;
+
+                getData.forEach((data) => {
+                    datas += `<tr>
+                        <td>${data.tanggal}</td>
+                        <td>${data.waktu}</td>
+                        <td>${data.lokasi}</td>
+                        <td>${data.suhu}</td>
+                        </tr>`;
+                });
+                dataTable.innerHTML = datas;
+            } else {
+                el.forEach((element, index) => {
+                    if(index === 2) {
+                        if(element.classList.contains("hidden")) {
+                            element.classList.remove("hidden");
+                        }
+                    } else {
+                        element.classList.add("hidden");
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        async function isiCatatan(event) {
+            event.preventDefault();
+            const tanggal = document.getElementById("tanggal").value;
+            const jam = document.getElementById("jam").value;
+            const lokasi = document.getElementById("lokasi").value;
+            const suhu = document.getElementById("suhu").value;
+            const nik = localStorage.getItem("isLoggedIn");
+
+            let formData = new FormData();
+            formData.append("tanggal", tanggal);
+            formData.append("jam", jam);
+            formData.append("lokasi", lokasi);
+            formData.append("suhu", suhu);
+            formData.append("nik", nik);
+            formData.append("action", "isiCatatan");
+
+            let object = {};
+            console.log(formData);
+            formData.forEach((value, key) => (object[key] = value));
+            let json = JSON.stringify(object);
+
+            try {
+                const response = await fetch("http://localhost", {
+                    method : "POST",
+                    Headers : {
+                        "Content-Type": "application/json",
+                    },
+                    body: json,
+            });
+            let data = await response.json();
+            console.log("data", data);
+            if (data.status == "success") {
+                alert("Data Berhasil Ditambahkan");
+                showTab("catatan");
+            } else {
+                aler("Data gagal ditambahkan");
+            }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        
+        function getNamaLengkap() {
+            const nama = localStorage.getItem("isLoggedInName");
+            if (nama) {
+                document.getElementById("nama_lengkap").innerHTML = nama;
+            }
+        }
+
+        getNamaLengkap();
+    </script>
+    <script>
+
+        //menu logout
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('isLoggedInName');
+            window.location.replace("login.html");
+        }
+    </script>
+    <script>
+
+        //mensortir data
+        async function urutkanTable() {
+            const data = document.getElementById("selectSorting").value;
+            console.log("clicked", data);
+            const response = await fetch("http://localhost", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nik: localStorage.getItem("isLoggedIn"),
+                    sortBy: data,
+                    action: "sorting",
+                }),
+            });
+            let getData = await response.json();
+
+            const dataTable = document.getElementById("dataFromApi");
+
+                let datas = `<tr>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
+                        <th>Lokasi</th>
+                        <th>Suhu</th>
+                    </tr>`;
+
+                getData.forEach((data) => {
+                    datas += `<tr>
+                        <td>${data.tanggal}</td>
+                        <td>${data.waktu}</td>
+                        <td>${data.lokasi}</td>
+                        <td>${data.suhu}</td>
+                        </tr>`;
+                });
+                dataTable.innerHTML = datas;
+        }
+    </script>
+</body>
+</html>

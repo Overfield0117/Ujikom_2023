@@ -1,0 +1,77 @@
+* {
+   font-family: Arial, Helvetica, sans-serif;
+   margin: 0px;
+}
+body {
+   background:linear-gradient(#f7c873, #faebcd );
+}
+.wrapper {
+   display: flex;
+   background-image: url(image/abstrack.png);
+   background-repeat: no-repeat;
+   background-size: cover;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   min-height: 100vh;
+}
+.label {
+   font-family: sans-serif;
+   font-weight: bold;
+   text-align: center;
+   background-color: #f7c873;
+   border-radius: 80px;
+   color: #1a1a1a;
+   padding: -10px;
+}
+.card {
+   display: flex;
+   flex-direction: column;
+   margin: 50px;
+   padding: 35px;
+   box-shadow: 0 10px 15px #000;
+   background-color: #ffffff;
+   border-radius: 40px;
+   overflow: hidden;
+   width: 300px;
+   height: 180px;
+}
+.form-wrapper {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+}
+.input-form {
+   min-width: 275px;
+   padding: 10px;
+   outline: none;
+   background-color: #faebcd;
+   border: 1.5px solid black;
+   border-radius: 5px;
+   color: black;
+}
+.button {
+   text-decoration: none;
+}
+.button-grup {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+.button {
+   border: 1.5px solid black;
+   font-size: 15px;
+   border-radius: 40px;
+   text-align: center;
+   color: black;
+   width: 130px;
+   padding: 5px;
+   cursor: pointer;
+   background-color: #f7c873;
+}
+.button:hover {
+   color: #941100;
+   background-color: #fff;
+   border-radius: 0;
+   transition: all 0.3s ease-in;
+}
